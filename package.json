@@ -1,0 +1,24 @@
+{
+  "name": "node-mongo",
+  "version": "1.0.0",
+  "description": "example node.js connection to mongodb",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dudash/openshift-examples/node-mongo"
+  },
+  "keywords": [
+    "nodejs",
+    "mongodb",
+    "openshift"
+  ],
+  "author": "jdudash@redhat.com",
+  "license": "Apache 2.0",
+  "dependencies": {
+    "express": "^4.13.3",
+    "mongodb": "^2.0.49"
+  }
+}
