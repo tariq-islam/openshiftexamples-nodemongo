@@ -2,9 +2,9 @@
   "name": "node-mongo",
   "version": "1.0.0",
   "description": "example node.js connection to mongodb",
-  "main": "index.js",
+  "main": "index-nodb.js",
   "scripts": {
-    "test": "node index.js"
+    "test": "node index-nodb.js"
   },
   "repository": {
     "type": "git",
