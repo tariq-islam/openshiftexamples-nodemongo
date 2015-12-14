@@ -4,10 +4,11 @@ var user = process.env.MONGODB_USER || 'dummy';
 var pass = process.env.MONGODB_PASSWORD || 'dummy';
 var dbip = process.env.MONGODB_SERVICE_HOST || '127.0.0.1';
 var dbport = process.env.MONGODB_SERVICE_PORT || 27017;
+var dbcoll = process.env.MONGODB_DATABASE || 'sampledb';
 var db = null;
-var url = 'mongodb://'+user+':'+pass+'@'+dbip+'/'+dbport+'/sampledb'
+var url = 'mongodb://'+user+':'+pass+'@'+dbip+'/'+dbport+'/'+dbcoll;
 // uncomment to use without authentication
-//var url = 'mongodb://'+dbip+'/'+dbport+'/sampledb'
+//var url = 'mongodb://'+dbip+'/'+dbport+'/'+dbcoll
 
 var mongoCreatedCollections = false;
 var initMongo = function(errcallback) {
