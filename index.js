@@ -9,6 +9,7 @@ var url = 'mongodb://'+user+':'+pass+'@'+dbip+'/'+dbport+'/sampledb'
 // uncomment to use without authentication
 //var url = 'mongodb://'+dbip+'/'+dbport+'/sampledb'
 
+var mongoCreatedCollections = false;
 var initMongo = function(errcallback) {
    console.log('attempting mongoDB connection to ' + url);
    MongoClient.connect(url, function(err, mydb) {
@@ -26,6 +27,7 @@ var initMongo = function(errcallback) {
          db.createCollection('test2', {strict:false}, function(err, collection) {
             collection.insert({name:"name",type:2}, function(err, records) { if (err) throw err;});
          });
+         mongoCreatedCollections = true;
       }
    });
 }
@@ -35,21 +37,24 @@ var express = require('express');
 var app = express();
 app.get('/', function(req, res) {
    console.log('GET request');
-   res.send('Hello MongoDB');
+   res.send('Hello MongoDB.\n <a href=\'/test1\'>test1</a> \n <a href=\'/test2\'>test2</a> \n <a href=\'/test3\'>test3</a>');
 });
 app.get('/test1', function(req, res) {
+   if (!mongoCreatedCollections) { res.send('test1 - no DB connection'); return; }
    db.collection('test1').find().toArray(function(err, items){
       console.log(items);
       res.send('items in test 1: ' + items.length);
    });
 });
 app.get('/test2', function(req, res) {
+   if (!mongoCreatedCollections) { res.send('test2 - no DB connection'); return; }
    db.collection('test2').find().toArray(function(err, items){
       console.log(items);
       res.send('items in test 2: ' + items.length);
    });
 });
 app.get('/test3', function(req, res) {
+   if (!mongoCreatedCollections) { res.send('test3 - no DB connection'); return; }
    db.collection('test3').find().toArray(function(err, items){
       console.log(items);
       res.send('items in test 3: ' + items.length);
