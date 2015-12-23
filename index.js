@@ -2,7 +2,8 @@
 var MongoClient = require('mongodb').MongoClient;
 var user = process.env.MONGODB_USER || 'dummy';
 var pass = process.env.MONGODB_PASSWORD || 'dummy';
-var dbip = process.env.MONGODB_SERVICE_HOST || '127.0.0.1';
+var dbip = process.env.MONGODB_SERVICE_HOST || 'db.local';
+//var dbip = 'localhost';
 var dbport = process.env.MONGODB_SERVICE_PORT || 27017;
 var dbcoll = process.env.MONGODB_DATABASE || 'sampledb';
 var db = null;
@@ -50,13 +51,18 @@ app.get('/', function(req, res) {
    }
 
    // Respond with some HTML
-   var respHTML = 'Hello MongoDB.<br/>';
-   if (!mongoCreatedCollections) { respHTML = respHTML + ' - ERROR, could not connect to DB<br/>'; }
-   respHTML = respHTML +
-      'requesting source:'+requestip+'<br/>'+
-      'webservice addresses:'+addresses;
-   if (!mongoCreatedCollections) { res.send(respHTML); return; }
-   
+   var respHTML = '<html><head><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">';
+   respHTML += '<title>Node.JS OpenShift Example</title></head>';
+   respHTML += '<body><div class="container-fluid">';
+   respHTML += '<div class="jumbotron"><h1>Hello Node + Mongo<h1>';
+   respHTML += '<p><span class="label label-info">requesting IP:'+requestip+'</span></p>'
+   respHTML += '<p><span class="label label-primary">my IP(s):'+addresses+'</span></p></div>';
+   if (!mongoCreatedCollections) { 
+     respHTML += '<div class="alert alert-danger" role="alert">ERROR, could not connect to DB</div><br/>';
+     respHTML += '</body></html>'; 
+     res.send(respHTML); return;
+   }
+
    // store this info
    var stamp = getDateTime();
    console.log('inserting from:' + requestip + ' served by node ' + addresses);
@@ -64,18 +70,20 @@ app.get('/', function(req, res) {
       collection.insert({date:stamp,theirIp:requestip,myIp:addresses}, function(err, records) { if (err) throw err;});
    });
 
-   respHTML = respHTML + '<hr>' + '<h3>GET Requests History</h3><ul>';
+   respHTML += '<div class="panel panel-default">';
+   respHTML += '<div class="panel-heading">GET Requests History</div>';
+   respHTML += '<div class="panel-body"><ul class="list-group">';
    db.collection('history').find().toArray(function(err, items) {
       for (var i = items.length - 1; i >= 0; i--) {
-         var itemout = '<li> date:' + items[i].date+', them:'+items[i].theirIp+', us:'+items[i].myIp+'</li>';
+         var itemout = '<li class="list-group-item"> date:' + items[i].date+', them:'+items[i].theirIp+', us:'+items[i].myIp+'</li>';
          //console.log(itemout);
          respHTML += itemout;
       };
-      respHTML = respHTML + '</ul><br/> last updated:' + stamp;
+      respHTML += '</ul></div>';
+      respHTML += '</div><p><span class="label label-default">this page updated on:' + stamp + '</span></p>';
+      respHTML += '</div></body></html>'
       res.send(respHTML);
    });
-   //respHTML = respHTML + '<br/> last updated:' + stamp;
-   //res.send(respHTML);
 });
 
 // setup MongoDB
