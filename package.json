@@ -4,7 +4,7 @@
   "description": "example node.js connection to mongodb",
   "main": "index-nodb.js",
   "scripts": {
-    "test": "node index-nodb.js",
+    "test": "node index.js",
     "test-nodb": "node index-nodb.js",
     "start": "node index.js",
     "start-nodb": "node index-nodb.js"

@@ -29,7 +29,9 @@ var initMongo = function(errcallback) {
 
 // setup webserver
 var express = require('express');
+var path = require('path');
 var app = express();
+app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', function(req, res) {
    console.log('GET request');
 
@@ -51,7 +53,7 @@ app.get('/', function(req, res) {
    }
 
    // Respond with some HTML
-   var respHTML = '<html><head><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">';
+   var respHTML = '<html><head><link rel="stylesheet" href="bootstrap.min.css">';
    respHTML += '<title>Node.JS OpenShift Example</title></head>';
    respHTML += '<body><div class="container-fluid">';
    respHTML += '<div class="jumbotron"><h1>Hello Node + Mongo<h1>';
