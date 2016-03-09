@@ -54,7 +54,7 @@ app.get('/', function(req, res) {
 
    // Respond with some HTML
    var respHTML = '<html><head><link rel="stylesheet" href="bootstrap.min.css">';
-   respHTML += '<title>NodeMongo OpenShift Example</title></head>';
+   respHTML += '<title>NodeMongo OpenShift 3.1 Example</title></head>';
    respHTML += '<body><div class="container-fluid">';
    respHTML += '<div class="jumbotron"><h1>Hello Node + Mongo<h1>';
    respHTML += '<p><span class="label label-info">requesting IP:'+requestip+'</span></p>'
