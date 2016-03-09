@@ -162,6 +162,8 @@ objects:
             value: sampledb
           - name: MONGODB_ADMIN_PASSWORD
             value: 0edbVV6KDatKLhRX
+          image: 172.30.108.249:5000/tislam-project/mynodeapp@sha256:959b1ca23cad63b9655e9b97a103f85d6e66ad723059b2e7c8687cc0991da2f9
+          imagePullPolicy: Always
           name: mynodeapp
           ports:
           - containerPort: 8080
