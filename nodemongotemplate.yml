@@ -1,0 +1,245 @@
+apiVersion: v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: nodemongotemplate.yml
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+      openshift.io/image.dockerRepositoryCheck: 2016-03-09T15:45:36Z
+    creationTimestamp: null
+    labels:
+      app: mynodeapp
+    name: mynodeapp
+  spec:
+    tags:
+    - from:
+        kind: DockerImage
+        name: 172.30.108.249:5000/tislam-project/mynodeapp:latest
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: mynodeapp
+    name: mynodeapp
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: mynodeapp:latest
+    resources: {}
+    source:
+      git:
+        ref: master
+        uri: https://github.com/tariq-islam/openshiftexamples-nodemongo
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: nodejs:0.10
+          namespace: openshift
+      type: Source
+    triggers:
+    - generic:
+        secret: 6a0f9d2f786b08fc
+      type: Generic
+    - github:
+        secret: 8d275308612191c3
+      type: GitHub
+    - imageChange: {}
+      type: ImageChange
+    - type: ConfigChange
+  status:
+    lastVersion: 0
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    labels:
+      template: mongodb-ephemeral-template
+    name: mongodb
+  spec:
+    replicas: 1
+    selector:
+      name: mongodb
+    strategy:
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          name: mongodb
+      spec:
+        containers:
+        - env:
+          - name: MONGODB_USER
+            value: user4M5
+          - name: MONGODB_PASSWORD
+            value: edKAq6YRTmWqMsGU
+          - name: MONGODB_DATABASE
+            value: sampledb
+          - name: MONGODB_ADMIN_PASSWORD
+            value: 0edbVV6KDatKLhRX
+          image: registry.access.redhat.com/rhscl/mongodb-26-rhel7:latest
+          imagePullPolicy: IfNotPresent
+          name: mongodb
+          ports:
+          - containerPort: 27017
+            protocol: TCP
+          resources: {}
+          securityContext:
+            capabilities: {}
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+          volumeMounts:
+          - mountPath: /var/lib/mongodb/data
+            name: mongodb-data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - emptyDir: {}
+          name: mongodb-data
+    triggers:
+    - imageChangeParams:
+        containerNames:
+        - mongodb
+        from:
+          kind: ImageStreamTag
+          name: mongodb:latest
+          namespace: openshift
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: mynodeapp
+    name: mynodeapp
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: mynodeapp
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: mynodeapp
+          deploymentconfig: mynodeapp
+      spec:
+        containers:
+        - env:
+          - name: MONGODB_USER
+            value: user4M5
+          - name: MONGODB_PASSWORD
+            value: edKAq6YRTmWqMsGU
+          - name: MONGODB_DATABASE
+            value: sampledb
+          - name: MONGODB_ADMIN_PASSWORD
+            value: 0edbVV6KDatKLhRX
+          image: 172.30.108.249:5000/tislam-project/mynodeapp@sha256:959b1ca23cad63b9655e9b97a103f85d6e66ad723059b2e7c8687cc0991da2f9
+          imagePullPolicy: Always
+          name: mynodeapp
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - mynodeapp
+        from:
+          kind: ImageStreamTag
+          name: mynodeapp:latest
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    labels:
+      app: mynodeapp
+    name: mynodeapp
+  spec:
+    host: mynodeapp-tislam-project.apps.rhsademo.net
+    port:
+      targetPort: 8080
+    to:
+      kind: Service
+      name: mynodeapp
+  status: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      template: mongodb-ephemeral-template
+    name: mongodb
+  spec:
+    ports:
+    - name: mongo
+      port: 27017
+      protocol: TCP
+      targetPort: 27017
+    selector:
+      name: mongodb
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: mynodeapp
+    name: mynodeapp
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deploymentconfig: mynodeapp
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
